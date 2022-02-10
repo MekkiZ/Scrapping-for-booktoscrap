@@ -259,7 +259,7 @@ scrapPage("https://books.toscrape.com/catalogue/category/books/childrens_11/inde
 
 
 
-
+### savoir si on supprime cette fonction ###
 
 
 def scrapOneProduct(url_P):
