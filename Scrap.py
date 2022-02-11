@@ -260,6 +260,7 @@ scrapPage("https://books.toscrape.com/catalogue/category/books/childrens_11/inde
 
 
 ### savoir si on supprime cette fonction ###
+### Function de scrap pour une seul page fusioner avec celle de toutes les pages a garder ou non  ###
 
 
 def scrapOneProduct(url_P):
@@ -273,43 +274,46 @@ def scrapOneProduct(url_P):
 
     #####Get Data from Website######
     if res.ok:
-
-        for para in soup.findAll('article', class_='product_page'):
-            description = soup.find_all("p")[3].text
+        try:
 
 
-        uPC = soup.find_all("td")[0].text
-        price_exc = soup.find_all("td")[2].text
-        price_inc = soup.find_all("td")[3].text
-        availability = soup.find_all("td")[5].text
-        nb_of_rev = soup.find_all("td")[6].text
-        title = tree.xpath("//li[@class='active']/text()")
-        category = tree.xpath("/html[1]/body[1]/div[1]/div[1]/ul[1]/li[3]/a[1]/text()")
-
-        for img in soup.findAll('img'):
-            photo = img.get('src')
+            for para in soup.findAll('article', class_='product_page'):
+                description = soup.find_all("p")[3].text
 
 
+            uPC = soup.find_all("td")[0].text
+            price_exc = soup.find_all("td")[2].text
+            price_inc = soup.find_all("td")[3].text
+            availability = soup.find_all("td")[5].text
+            nb_of_rev = soup.find_all("td")[6].text
+            title = tree.xpath("//li[@class='active']/text()")
+            category = tree.xpath("/html[1]/body[1]/div[1]/div[1]/ul[1]/li[3]/a[1]/text()")
 
-        d = {'product_page_url': [url_P],
-             'universal_ product_code': [uPC],
-             'title': [title],
-             'price_including_tax': [price_inc],
-             'price_excluding_tax': [price_exc],
-             'number_available': [availability],
-             'product_description': [para],
-             'category': [category],
-             'review_rating': [nb_of_rev],
-             'image_url': [photo]
+            for img in soup.findAll('img'):
+                photo = img.get('src')
 
-             }
 
-        df = pd.DataFrame(d, columns=(
-        'product_page_url', 'universal_ product_code', 'title', 'price_including_tax', 'price_excluding_tax',
-        'number_available', 'product_description', 'category', 'review_rating', 'image_url'))
-        df.reset_index(inplace=True)
-        df.to_csv('ScrapOneProduct.csv', sep=';')
 
+            d = {'product_page_url': [url_P],
+                 'universal_ product_code': [uPC],
+                 'title': [title],
+                 'price_including_tax': [price_inc],
+                 'price_excluding_tax': [price_exc],
+                 'number_available': [availability],
+                 'product_description': [para],
+                 'category': [category],
+                 'review_rating': [nb_of_rev],
+                 'image_url': [photo]
+
+                 }
+
+            df = pd.DataFrame(d, columns=(
+            'product_page_url', 'universal_ product_code', 'title', 'price_including_tax', 'price_excluding_tax',
+            'number_available', 'product_description', 'category', 'review_rating', 'image_url'))
+            df.reset_index(inplace=True)
+            df.to_csv('ScrapOneProduct.csv', sep=';')
+        except ValueError:
+            pass
     return
 
 
