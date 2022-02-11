@@ -219,10 +219,6 @@ def scrapPage(url_P, folder):
 
 
 
-
-
-
-
                         info = [url_P, uPC,
                                 titres,
                                 price_inc,
