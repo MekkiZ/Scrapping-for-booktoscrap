@@ -313,4 +313,4 @@ def scrapOneProduct(url_P):
     return
 
 
-#scrapOneProduct("https://books.toscrape.com/catalogue/soumission_998/index.html")
+
