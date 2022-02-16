@@ -67,8 +67,8 @@ def methode_scrap_pagination(url_to_scrap, folder):
                             for links in url.findAll('a', href=True):
                                 href = links.get("href")
                                 link = href.replace("../../..", "https://books.toscrape.com/catalogue")
-                                tbl = {link}
-                                for scrap in tbl:
+                                tableau = {link}
+                                for scrap in tableau:
                                     soup = BeautifulSoup(requests.get(scrap).content, "lxml")
 
                                     description = soup.find_all("p")[3].text
@@ -93,9 +93,9 @@ def methode_scrap_pagination(url_to_scrap, folder):
                                                 photo_firsts_page.close()
 
                                     # Data scrapped
-                                    info = [link, upc, titres, price_inc_tax, price_exc_tax, availability,
+                                    data_scrap = [link, upc, titres, price_inc_tax, price_exc_tax, availability,
                                                 description, category, nb_of_rev, source_clean]
-                                    the_writer.writerow(info)
+                                    the_writer.writerow(data_scrap)
                 else:
                     for url in soup.findAll('div', class_='image_container'):
                         data = url.findAll('a', href=True)
@@ -128,24 +128,30 @@ def methode_scrap_pagination(url_to_scrap, folder):
                                             photo_last_page.close()
 
                                 # Data scrapped
-                                info = [link, upc, titres, price_inc_tax, price_exc_tax, availability,
+                                data_scrap = [link, upc, titres, price_inc_tax, price_exc_tax, availability,
                                             description, category, nb_of_rev, source_clean]
-                                the_writer.writerow(info)
+                                the_writer.writerow(data_scrap)
 
-                    logging.info("     Scrapping as been saved     ")
+
 
                     break
 
 
         finally:
             data_scv.close()
-    return
+    return logging.info("     Scrapping as been saved     ")
 
 
 
 
 
 def scrap_for_one_page(url_to_scrap, folder):
+    """
+    Same code as above for pagination.
+    But here we only to check one page without next button.
+
+    """
+
     response = requests.get(url_to_scrap)
     soup = BeautifulSoup(response.content, "lxml")
 
@@ -164,7 +170,7 @@ def scrap_for_one_page(url_to_scrap, folder):
                       'number_available', 'product_description', 'category', 'review_rating', 'image_url']
             the_writer.writerow(header)
 
-            print("        No bouton 'Next'        ", "\n")
+            logging.info("        No bouton 'Next'        ")
             for art in soup.findAll('div', class_='image_container'):
                 lien = art.findAll('a', href=True)
                 for liens in lien:
@@ -196,9 +202,9 @@ def scrap_for_one_page(url_to_scrap, folder):
                                 finally:
                                     photos.close()
 
-                        info = [url_to_scrap, upc, titres, price_inc_tax, price_exc_tax, availability, description,
+                        data_one_page_scrap = [url_to_scrap, upc, titres, price_inc_tax, price_exc_tax, availability, description,
                                     category, nb_of_rev, source_clean]
-                        the_writer.writerow(info)
+                        the_writer.writerow(data_one_page_scrap)
         finally:
             file_one_page_scrap.close()
 
@@ -216,6 +222,9 @@ def scraper(url_to_scrap: str, folder: str) -> str:
     this data is intended to help market research.
     all data will be saved in a corresponding folder.
 
+    param 1 : url_to_scrap -> str
+    param 2 : folder-> str
+
     """
     response = requests.get(url_to_scrap)
     tree = html.fromstring(response.content)
@@ -228,9 +237,7 @@ def scraper(url_to_scrap: str, folder: str) -> str:
     else:
         scrap_for_one_page(url_to_scrap, folder)
 
-    logging.info("No problem in code")
-
-    return str(response)
+    return logging.info("No problem in code")
 
 
 
