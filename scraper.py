@@ -20,6 +20,13 @@ from lxml import html
 
 
 logging.basicConfig(level=logging.INFO)
+# Delete spaces
+
+
+
+
+
+
 
 
 
@@ -45,7 +52,10 @@ def methode_scrap_pagination(url_to_scrap, folder):
         except ValueError:
             logging.debug("Path can't creat")
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> new_version
 # Creat file.
         os.chdir(os.path.join(os.getcwd(), folder))
         data_scv = open('dataScrap.csv', 'w', encoding='utf-8', newline='')
@@ -59,8 +69,13 @@ def methode_scrap_pagination(url_to_scrap, folder):
             the_writer.writerow(header)
 
 # Loop to navigate in pagination
+<<<<<<< HEAD
+=======
+            # Get valid urls for scraping
+            # Scraping for plusieurs page
+            # Scraping for plusieurs categories
+>>>>>>> new_version
             while True:
-
                 response = requests.get(url_to_scrap)
                 soup = BeautifulSoup(response.content, "lxml")
                 footer_element = soup.select_one('li.current')
@@ -79,8 +94,12 @@ def methode_scrap_pagination(url_to_scrap, folder):
                                 for scrap in {link}:
                                     soup = BeautifulSoup(requests.get(scrap).content, "lxml")
                                     data_soup = soup.find_all("td")
+<<<<<<< HEAD
 
+=======
+>>>>>>> new_version
 
+                                    # TODO: Create a method called extract information in page
                                     description = soup.find_all("p")[3].text
                                     upc = data_soup[0].text
                                     price_exc_tax = data_soup[2].text
@@ -144,9 +163,6 @@ def methode_scrap_pagination(url_to_scrap, folder):
                                 data_scrap = [link, upc, titres, price_inc_tax, price_exc_tax, availability,
                                               description, category, nb_of_rev, source_clean]
                                 the_writer.writerow(data_scrap)
-
-
-
                     break
 
 
@@ -155,7 +171,10 @@ def methode_scrap_pagination(url_to_scrap, folder):
     return logging.info("     Scrapping as been saved     ")
 
 methode_scrap_pagination("https://books.toscrape.com/catalogue/category/books/childrens_11/index.html", "chilldd")
+<<<<<<< HEAD
 
+=======
+>>>>>>> new_version
 
 
 def scrap_for_one_page(url_to_scrap, folder):
@@ -192,7 +211,10 @@ def scrap_for_one_page(url_to_scrap, folder):
                         res = requests.get(scrap)
                         soup = BeautifulSoup(res.content, "lxml")
                         data_soup = soup.find_all("td")
+<<<<<<< HEAD
 
+=======
+>>>>>>> new_version
 
                         description = soup.find_all("p")[3].text
                         upc = data_soup[0].text
@@ -239,6 +261,10 @@ def scraper(url_to_scrap: str, folder: str) -> str:
     all data will be saved in a corresponding folder.
     param 1 : url_to_scrap -> str
     param 2 : folder -> str
+<<<<<<< HEAD
+=======
+
+>>>>>>> new_version
     """
     response = requests.get(url_to_scrap)
     tree = html.fromstring(response.content)
@@ -253,4 +279,8 @@ def scraper(url_to_scrap: str, folder: str) -> str:
 
     logging.info("No problem in code")
 
+<<<<<<< HEAD
     return str("good job")
+=======
+    return str("good job")
+>>>>>>> new_version
