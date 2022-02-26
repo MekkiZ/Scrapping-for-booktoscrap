@@ -20,7 +20,7 @@ from lxml import html
 
 
 logging.basicConfig(level=logging.INFO)
-
+# Delete spaces
 
 
 
@@ -45,7 +45,6 @@ def methode_scrap_pagination(url_to_scrap, folder):
         except ValueError:
             logging.debug("Path can't creat")
 
-
 # Creat file.
         os.chdir(os.path.join(os.getcwd(), folder))
         data_scv = open('dataScrap.csv', 'w', encoding='utf-8', newline='')
@@ -59,8 +58,10 @@ def methode_scrap_pagination(url_to_scrap, folder):
             the_writer.writerow(header)
 
 # Loop to navigate in pagination
+            # Get valid urls for scraping
+            # Scraping for plusieurs page
+            # Scraping for plusieurs categories
             while True:
-
                 response = requests.get(url_to_scrap)
                 soup = BeautifulSoup(response.content, "lxml")
                 footer_element = soup.select_one('li.current')
@@ -80,7 +81,7 @@ def methode_scrap_pagination(url_to_scrap, folder):
                                     soup = BeautifulSoup(requests.get(scrap).content, "lxml")
                                     data_soup = soup.find_all("td")
 
-
+                                    # TODO: Create a method called extract information in page
                                     description = soup.find_all("p")[3].text
                                     upc = data_soup[0].text
                                     price_exc_tax = data_soup[2].text
@@ -144,9 +145,6 @@ def methode_scrap_pagination(url_to_scrap, folder):
                                 data_scrap = [link, upc, titres, price_inc_tax, price_exc_tax, availability,
                                               description, category, nb_of_rev, source_clean]
                                 the_writer.writerow(data_scrap)
-
-
-
                     break
 
 
@@ -155,7 +153,6 @@ def methode_scrap_pagination(url_to_scrap, folder):
     return logging.info("     Scrapping as been saved     ")
 
 methode_scrap_pagination("https://books.toscrape.com/catalogue/category/books/childrens_11/index.html", "chilldd")
-
 
 
 def scrap_for_one_page(url_to_scrap, folder):
@@ -194,7 +191,6 @@ def scrap_for_one_page(url_to_scrap, folder):
                         soup = BeautifulSoup(res.content, "lxml")
                         data_soup = soup.find_all("td")
 
-
                         description = soup.find_all("p")[3].text
                         upc = data_soup[0].text
                         price_exc_tax = data_soup[2].text
@@ -203,7 +199,6 @@ def scrap_for_one_page(url_to_scrap, folder):
                         nb_of_rev = data_soup[6].text
                         titres = soup.find("h1").text
                         category = soup.find_all("a")[3].text
-
 
                         for div in soup.find_all('div', class_='item active'):
                             for i in div.findAll('img'):
