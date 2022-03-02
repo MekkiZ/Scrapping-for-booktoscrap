@@ -12,15 +12,14 @@ import logging
 import csv
 import requests
 from bs4 import BeautifulSoup
-from csv import DictWriter
+import os
 import time
+import re
 
 
 url = 'https://books.toscrape.com/catalogue/category/books/romance_8/index.html'
 
 logging.basicConfig(level=logging.INFO)
-"""
-
 
 def creat_folder(folder):
     try:
@@ -31,10 +30,10 @@ def creat_folder(folder):
 
         # Creat file.
     os.chdir(os.path.join(os.getcwd(), folder))
-"""
 
 
-def scrap(url, soup):
+
+def scrap(source_url, soup):
     books = []
     container = soup.findAll('div', class_='image_container')
     for i in container:
@@ -57,7 +56,7 @@ def scrap(url, soup):
                         }
 
                 books.append(book)
-                write_to_csv(books)
+    write_to_csv(books)
 
 
 
@@ -70,7 +69,6 @@ def write_to_csv(books: list):
     """
     data_scv = open('dataScrap.csv', 'w', encoding='utf-8', newline='')
     try:
-
         header = ['product_page_url', 'universal_product_code', 'title', 'price_including_tax',
                   'price_excluding_tax',
                   'number_available', 'product_description', 'category', 'review_rating']
@@ -84,7 +82,8 @@ def write_to_csv(books: list):
 
 
 def browse_and_scrape(url, page_number=1):
-
+    url_pat = re.compile(r"(http://.*\.com)")
+    source_url = url_pat.search(url)
     formatted_url = url.replace('index', f'page-{page_number}')
     try:
         html_text = requests.get(formatted_url).text
@@ -93,12 +92,12 @@ def browse_and_scrape(url, page_number=1):
         print(f"Now Scraping - {formatted_url}")
 
         if soup.find("li", class_='next') != None:
-            scrap(url, soup)
+            scrap(source_url, soup)
             time.sleep(3)
             page_number += 1
             browse_and_scrape(url, page_number)
         else:
-            scrap(url, soup)
+            scrap(source_url, soup)
             return True
         return True
     except Exception as e:
