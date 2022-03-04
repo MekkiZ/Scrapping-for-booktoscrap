@@ -1,13 +1,5 @@
 ##############################
-# Program Python Type        #
-# author : Mekki GreyHat     #
-# Licence : OC               #
-##############################
-
-
-##############################
 #        Import Moduls       #
-
 import logging
 import csv
 import requests
@@ -17,8 +9,8 @@ import time
 import re
 
 
-url = 'https://books.toscrape.com/catalogue/category/books/romance_8/index.html'
 
+books = []
 logging.basicConfig(level=logging.INFO)
 
 def creat_folder(folder):
@@ -32,17 +24,18 @@ def creat_folder(folder):
     os.chdir(os.path.join(os.getcwd(), folder))
 
 
+def scrap(formatted_url, soup):
 
-def scrap(source_url, soup):
-    books = []
     container = soup.findAll('div', class_='image_container')
     for i in container:
+
         for links in i.findAll('a', href=True):
             href = links.get("href")
             link = href.replace("../../..", "https://books.toscrape.com/catalogue")
-            for scrap in {link}:
-                soup_scrap = BeautifulSoup(requests.get(scrap).content, "lxml")
+            for scraps in {link}:
+                soup_scrap = BeautifulSoup(requests.get(scraps).content, "lxml")
                 data_soup = soup_scrap.find_all("td")
+
 
                 book = {'product_page_url': link,
                         'universal_product_code': data_soup[0].text,
@@ -56,12 +49,13 @@ def scrap(source_url, soup):
                         }
 
                 books.append(book)
-    write_to_csv(books)
+        write_to_csv(books)
 
 
 
 
-def write_to_csv(books: list):
+
+def write_to_csv(books):
     """
     Write books into csv
     :param books:
@@ -81,23 +75,25 @@ def write_to_csv(books: list):
 
 
 
-def browse_and_scrape(url, page_number=1):
-    url_pat = re.compile(r"(http://.*\.com)")
-    source_url = url_pat.search(url)
-    formatted_url = url.replace('index', f'page-{page_number}')
-    try:
-        html_text = requests.get(formatted_url).text
+def browse_and_scrape(url: str, page_number=1) -> str:
 
+
+    #url_one_scrap = url.replace('index.html', ' ')
+    try:
+        #creat_folder(folder)
+        formatted_url = url.replace('index', f'page-{page_number}')
+        html_text = requests.get(formatted_url).text
         soup = BeautifulSoup(html_text, "html.parser")
+
         print(f"Now Scraping - {formatted_url}")
 
-        if soup.find("li", class_='next') != None:
-            scrap(source_url, soup)
+        if soup.find("li", class_='next') is not None:
+            scrap(formatted_url, soup)
             time.sleep(3)
             page_number += 1
             browse_and_scrape(url, page_number)
-        else:
-            scrap(source_url, soup)
+        elif soup.find("li", class_='next') is None:
+            scrap(formatted_url, soup)
             return True
         return True
     except Exception as e:
@@ -107,7 +103,7 @@ def browse_and_scrape(url, page_number=1):
 
 
 if __name__ == "__main__":
-    url = 'https://books.toscrape.com/catalogue/category/books/romance_8/index.html'
+    url = input('url to scrap : ')
     print("Web scraping has begun")
     result = browse_and_scrape(url)
     if result == True:
