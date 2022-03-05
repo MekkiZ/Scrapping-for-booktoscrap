@@ -1,11 +1,20 @@
+# TODO: Rename file to scraper
+
+# TODO: Delete comments 'Import Moduls' not needed
+# TODO: Install pre-commit which will help you to check for unused imports
+
+# TODO: Make sure this is working to scrape all the books for all categories
+
 ##############################
 #        Import Moduls       #
 import logging
 import csv
 import requests
 from bs4 import BeautifulSoup
+# TODO: os, time imports should be before bs4. Please install pylint
 import os
 import time
+# TODO: Delete unused import
 import re
 
 
@@ -13,6 +22,11 @@ import re
 books = []
 logging.basicConfig(level=logging.INFO)
 
+# TODO: Rename to create_folder
+# TODO: folder is a string in the signature
+# TODO: Add a docstring
+# TODO: I don't think the try except is needed here since your are creating your folder at the beginning
+# TODO: What is doing os.chdir
 def creat_folder(folder):
     try:
         # Creat path's folder, the file CSV and Photo are there.
@@ -24,6 +38,8 @@ def creat_folder(folder):
     os.chdir(os.path.join(os.getcwd(), folder))
 
 
+# TODO: Rename to scrape_books
+# TODO: Add types in signature for formatted_url and soup
 def scrap(formatted_url, soup):
 
     container = soup.findAll('div', class_='image_container')
@@ -50,11 +66,12 @@ def scrap(formatted_url, soup):
 
                 books.append(book)
         write_to_csv(books)
+# TODO: Delete uneccessary spaces
 
 
 
-
-
+# TODO: Add type for books in signature
+# TODO: I don't think the try except is necessary here because you control well what your code is doing
 def write_to_csv(books):
     """
     Write books into csv
@@ -72,15 +89,19 @@ def write_to_csv(books):
     except:
         return False
 
-
-
-
+# TODO: Add docstring
+# TODO: Add type for page_number
+# TODO: Doesnt return str return a boolean True if good
+# TODO: Raise exception if not good
+# TODO: Use logging not print
+# TODO: Delete commented code which is not used
 def browse_and_scrape(url: str, page_number=1) -> str:
 
 
     #url_one_scrap = url.replace('index.html', ' ')
     try:
         #creat_folder(folder)
+        # TODO: You need to find a way working to scrape all the books from
         formatted_url = url.replace('index', f'page-{page_number}')
         html_text = requests.get(formatted_url).text
         soup = BeautifulSoup(html_text, "html.parser")
