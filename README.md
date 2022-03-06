@@ -1,24 +1,40 @@
-#TODO: Create title with heading
+#Scrape for books
 
-#TODO: Create Short description
-Bienvenue dans le code qui va scrapper vos données.
-Vous avez envi de recuperer des données de une ou plusieurs pages ? Pas de problèmes avec ce script, vous le pouvez maintenant.
+##Description
+You want takes data from website " _**bookstoscrape**_ ", this script can make that for you.
 
-#TODO: Create Setup section containing (Create virtualenv, Install dependencies)
+##Setup of python's script
+First, you need to make sure you have python interpreter, if not looks here https://docs.python.org/fr/3/using/index.html
 
-Short text example
+Now that you have a python interpreter, clone the repository with command :
 ```
-command example
+git clone https://github.com/MekkiZ/Project2.git
 ```
 
-#TODO: Create Run section
+After that, use this command in bash :
+```
+pip install requirements.txt
+```
 
-#TODO: Create Notes section
-                                        Commment ça marche ??
-Dans la fonction scrapPage( "URL"," Nom du dossier "); On as deux arguments.(attention aux espaces entre les "")
+#Run the script
+After the previous step, with you shell bash, be sure to be in the folder that contains the python script
+run this command
+```
+python3 scraper_final_code.py
+```
+Now you have this :
+```
+url to scrap :
+```
+Put the url: https://books.toscrape.com/index.html \
 
-Le premier : Permet à python de situer l'endrois que vous voulez scrapper _Le deuxième : Permet de crées un dossier avec a l'intérieur les photos et le fichier CSV avec tous les informations besoin)_
+After that named the name folder that you want here :
+```
+le nom du dossier :
+```
 
-Naviguez dans n'importes quels categories, que celle-ci est une ou deux cents references, vous aurez toutes les informations necessaire, dans le dossier correspond ( argument 2 )
-
-#TODO: Fix typo/fautes
+# What I learned with this project
+For the beginning,  I created a script without PEP8 convention.
+That a problem for futur debug, and understanding for futur developers
+So I learned how make sub function, each function have specific purpose.
+Use a variant for While loop, learn scrapping way.
