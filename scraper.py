@@ -22,12 +22,12 @@ def create_folder(folder: str):
 def scrape_books(soup):
     """
     This function Scrape all data for each page product,
-    also th function download all picture of books
+    also the function downloads all covers of books
     :param soup: variable to invoke BeautifulSoup module
     """
-    container = soup.findAll("div", class_="image_container")
-    for i in container:
-        for links in i.findAll("a", href=True):
+    book_details_containers = soup.findAll("div", class_="image_container")
+    for book_details_url in book_details_containers:
+        for links in book_details_url.findAll("a", href=True):
             href = links.get("href")
             link = f"https://books.toscrape.com/catalogue/{href}"
             logging.info(link)
@@ -48,9 +48,6 @@ def scrape_books(soup):
                     photo_firsts_page.write(image_response.content)
                 finally:
                     photo_firsts_page.close()
-                    source_clean = images.get("src").replace(
-                        "../../", "https://books.toscrape.com/"
-                    )
 
             book = {
                 "product_page_url": link,
@@ -126,8 +123,8 @@ if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     url_to_scrap = input("url to scrape : ")
     books = []
-    target_folder = input("le nom du dossier :")
-    logging.info("Web scraping has begun")
+    target_folder = input("folder name to store books info :")
+    logging.info("Web scraping starting")
     create_folder(target_folder)
     result = browse_and_scrape(url_to_scrap, target_folder)
     if result is True:
