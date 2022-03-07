@@ -1,16 +1,16 @@
-#Scrape for books
+# Scrape for books
 
-##Description
+## Description
 This script has been created to scrape books details from the website https://books.toscrape.com into a csv file.
 
-##Setup
+## Setup
 Create a virtualenv for the project with Python 3.9.10
 ```
 python -m venv venv
 source venv/bin/activate
 pip install -r requirements.txt
 ```
-#Run the script
+# Run the script
 
 Run this command :
 ```
