@@ -11,7 +11,7 @@ import requests
 def create_folder(folder: str):
     """
     Create folder containing a csv file with books details and books covers
-    :param folder: name of folder's data, entered by the user
+    :param folder: Name of folder containing data
     :return:
     """
     os.mkdir(os.path.join(os.getcwd(), folder))
@@ -22,8 +22,8 @@ def create_folder(folder: str):
 def scrape_books(soup):
     """
     This function Scrape all data for each page product,
-    also the function downloads all covers of books
-    :param soup: variable to invoke BeautifulSoup module
+    also the function downloads all covers of books.
+    :param soup: BeautifulSoup instance
     """
     book_details_containers = soup.findAll("div", class_="image_container")
     for book_details_url in book_details_containers:
@@ -65,11 +65,11 @@ def scrape_books(soup):
 
 def write_to_csv(extracted_books: list):
     """
-    Write books into csv
+    Write books into csv.
     :param extracted_books: Books details scraped previously
     :return:
     """
-    data_scv = open("dataScrap.csv", "w", encoding="utf-8", newline="")
+    csv_file = open("dataScrap.csv", "w", encoding="utf-8", newline="")
     header = [
         "product_page_url",
         "universal_product_code",
@@ -82,17 +82,18 @@ def write_to_csv(extracted_books: list):
         "review_rating",
         "image_source_url",
     ]
-    writer = csv.DictWriter(data_scv, fieldnames=header, delimiter=str(";"))
+    writer = csv.DictWriter(csv_file, fieldnames=header, delimiter=str(";"))
     writer.writeheader()
     writer.writerows(extracted_books)
+    csv_file.close()
 
 
 def browse_and_scrape(url: str, folder: str, page_number: int = 1) -> bool:
     """
-    Scrape all books from website 'books to scrape'
-    :param url of first category page
-    :param folder is the localisation for data scraped and photos
-    :param page_number: number page origin
+    Scrape all books from website 'books to scrape'.
+    :param url: Url of the first page to scrape
+    :param folder: Folder name containing scraped data and photos
+    :param page_number: Number page origin
     :return:
     """
     try:
