@@ -43,11 +43,9 @@ def scrape_books(soup):
                 photo_firsts_page = open(
                     alt.replace(" ", "-").replace("/", "") + ".jpg", "wb"
                 )  # pylint: disable=bad-option-value
-                try:
-                    image_response = requests.get(source_clean)
-                    photo_firsts_page.write(image_response.content)
-                finally:
-                    photo_firsts_page.close()
+                image_response = requests.get(source_clean)
+                photo_firsts_page.write(image_response.content)
+                photo_firsts_page.close()
 
             book = {
                 "product_page_url": link,
