@@ -14,7 +14,7 @@ pip install -r requirements.txt
 
 Run this command :
 ```
-python3 scraper_final_code.py
+python3 scraper.py
 ```
 Now you have this :
 ```
@@ -24,7 +24,7 @@ Put the url: https://books.toscrape.com/index.html \
 
 After that named the name folder that you want here :
 ```
-le nom du dossier :
+folder name to store books info :
 ```
 # What I learned with this project
 For the beginning,  I created a script without PEP8 convention.
