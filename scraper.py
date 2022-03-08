@@ -69,7 +69,7 @@ def write_to_csv(extracted_books: list):
     :param extracted_books: Books details scraped previously
     :return:
     """
-    data_scv = open("dataScrap.csv", "w", encoding="utf-8", newline="")
+    csv_file = open("dataScrap.csv", "w", encoding="utf-8", newline="")
     header = [
         "product_page_url",
         "universal_product_code",
@@ -82,9 +82,10 @@ def write_to_csv(extracted_books: list):
         "review_rating",
         "image_source_url",
     ]
-    writer = csv.DictWriter(data_scv, fieldnames=header, delimiter=str(";"))
+    writer = csv.DictWriter(csv_file, fieldnames=header, delimiter=str(";"))
     writer.writeheader()
     writer.writerows(extracted_books)
+    csv_file.close()
 
 
 def browse_and_scrape(url: str, folder: str, page_number: int = 1) -> bool:
