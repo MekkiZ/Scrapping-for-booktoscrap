@@ -19,17 +19,31 @@ def create_folder(folder: str):
     os.chdir(os.path.join(os.getcwd(), folder))
 
 
+def get_categories_from_side_bar():
+    url = requests.get("https://books.toscrape.com/index.html").text
+    soup = BeautifulSoup(url, "html.parser")
+    for i in soup.findAll("div", class_="side_categories"):
+        for categories_links in i.findAll("div", class_="nav nav-list"):
+            links_href = categories_links.get("href")
+            formatted_links_categories = f"https://books.toscrape.com/{links_href}"
+            text_categories = str(categories_links.get_text())
+            block = {text_categories: formatted_links_categories}
+
+            return [block]
+
+
 def scrape_books(soup):
     """
     This function Scrape all data for each page product,
     also the function downloads all covers of books
     :param soup: BeautifulSoup instance
     """
+
     book_details_containers = soup.findAll("div", class_="image_container")
-    for book_details_url in book_details_containers:
+    for book_details_url in book_details_containers[0:3]:
         for links in book_details_url.findAll("a", href=True):
             href = links.get("href")
-            link = f"https://books.toscrape.com/catalogue/{href}"
+            link = href.replace("../../../", "https://books.toscrape.com/catalogue/")
             logging.info(link)
             soup_scrap = BeautifulSoup(requests.get(link).content, "lxml")
             data_soup = soup_scrap.find_all("td")
@@ -115,18 +129,36 @@ def browse_and_scrape(url: str, folder: str, page_number: int = 1) -> bool:
         return True
     except Exception as ex:
         logging.error(ex)
-        return False
+        raise ex
+
+
+def scrape_book_for_category(category):
+    """
+    Scrape book for category
+    :param : category name
+    :return:
+    """
+    name = category["name"]
+    create_folder(name)
+    # result = browse_and_scrape(category["url"], name)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    url_to_scrap = input("url to scrape : ")
+    # category_url = input("url to scrape : ")
     books = []
-    target_folder = input("folder name to store books info :")
+
+    # target_folder = input("folder name to store books info :")
     logging.info("Web scraping starting")
-    create_folder(target_folder)
-    result = browse_and_scrape(url_to_scrap, target_folder)
-    if result is True:
-        logging.info("Web scraping is now complete!")
-    else:
-        logging.info("Oops, That doesn't seem right!! %s", result)
+    categories = [
+        {
+            "name": "Category",
+            "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
+        },
+        {
+            "name": "Category2",
+            "url": "https://books.toscrape.com/catalogue/category/books/crime_51/index.html",
+        },
+    ]
+    for cate in categories:
+        scrape_book_for_category(cate)
