@@ -20,16 +20,20 @@ def create_folder(folder: str):
 
 
 def get_categories_from_side_bar():
+    categories = []
     url = requests.get("https://books.toscrape.com/index.html").text
     soup = BeautifulSoup(url, "html.parser")
-    for i in soup.findAll("div", class_="side_categories"):
-        for categories_links in i.findAll("div", class_="nav nav-list"):
-            links_href = categories_links.get("href")
-            formatted_links_categories = f"https://books.toscrape.com/{links_href}"
-            text_categories = str(categories_links.get_text())
-            block = {text_categories: formatted_links_categories}
+    category_list = soup.find("ul", class_="nav nav-list")
+    for i in category_list.findAll("li")[1:51]:
+        links_a = i.find("a")
+        links_href = links_a.get("href")
+        links_text = links_a.get_text().strip()
+        formatted_links_categories = f"https://books.toscrape.com/{links_href}"
+        print(formatted_links_categories)
+        category = {"name": links_text, "url": formatted_links_categories}
+        categories.append(category)
 
-            return [block]
+    return categories
 
 
 def scrape_books(soup):
@@ -74,7 +78,8 @@ def scrape_books(soup):
                 "image_source_url": source_clean,
             }
             books.append(book)
-        write_to_csv(books)
+    write_to_csv(books)
+    return books
 
 
 def write_to_csv(extracted_books: list):
@@ -139,26 +144,19 @@ def scrape_book_for_category(category):
     :return:
     """
     name = category["name"]
-    create_folder(name)
-    # result = browse_and_scrape(category["url"], name)
+    # create_folder(cate["name"])
+    print(category["url"])
+    browse_and_scrape(category["url"], name)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
     # category_url = input("url to scrape : ")
     books = []
-
-    # target_folder = input("folder name to store books info :")
+    target_folder = input("folder name to store books info :")
     logging.info("Web scraping starting")
-    categories = [
-        {
-            "name": "Category",
-            "url": "https://books.toscrape.com/catalogue/category/books/travel_2/index.html",
-        },
-        {
-            "name": "Category2",
-            "url": "https://books.toscrape.com/catalogue/category/books/crime_51/index.html",
-        },
-    ]
-    for cate in categories:
+    categorieses = get_categories_from_side_bar()
+    create_folder(target_folder)
+    for cate in categorieses:
+
         scrape_book_for_category(cate)
