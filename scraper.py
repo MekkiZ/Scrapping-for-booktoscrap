@@ -19,48 +19,66 @@ def create_folder(folder: str):
     os.chdir(os.path.join(os.getcwd(), folder))
 
 
+def get_categories_from_side_bar():
+    categories = []
+    url = requests.get("https://books.toscrape.com/index.html").text
+    soup = BeautifulSoup(url, "html.parser")
+    category_list = soup.find("ul", class_="nav nav-list")
+    for i in category_list.findAll("li")[1:51]:
+        links_a = i.find("a")
+        links_href = links_a.get("href")
+        links_text = links_a.get_text().strip()
+        formatted_links_categories = f"https://books.toscrape.com/{links_href}"
+        # print(formatted_links_categories)
+        category = {"name": links_text, "url": formatted_links_categories}
+        categories.append(category)
+
+    return categories
+
+
 def scrape_books(soup):
     """
     This function Scrape all data for each page product,
     also the function downloads all covers of books
     :param soup: BeautifulSoup instance
     """
+
     book_details_containers = soup.findAll("div", class_="image_container")
-    for book_details_url in book_details_containers:
+    for book_details_url in book_details_containers[0:3]:
         for links in book_details_url.findAll("a", href=True):
             href = links.get("href")
-            link = f"https://books.toscrape.com/catalogue/{href}"
+            link = href.replace("../../../", "https://books.toscrape.com/catalogue/")
             logging.info(link)
             soup_scrap = BeautifulSoup(requests.get(link).content, "lxml")
             data_soup = soup_scrap.find_all("td")
+            for div in soup_scrap.find_all("div", class_="item active"):
+                for images in div.find_all("img"):
+                    alt = images.get("alt")
+                    source_clean = images.get("src").replace(
+                        "../../", "https://books.toscrape.com/"
+                    )
 
-            for images in soup_scrap.find_all("img"):
-                alt = images.get("alt")
-                source_clean = images.get("src").replace(
-                    "../../", "https://books.toscrape.com/"
-                )
+                    photo_firsts_page = open(
+                        alt.replace(" ", "-").replace("/", "") + ".jpg", "wb"
+                    )  # pylint: disable=bad-option-value
+                    image_response = requests.get(source_clean)
+                    photo_firsts_page.write(image_response.content)
+                    photo_firsts_page.close()
 
-                photo_firsts_page = open(
-                    alt.replace(" ", "-").replace("/", "") + ".jpg", "wb"
-                )  # pylint: disable=bad-option-value
-                image_response = requests.get(source_clean)
-                photo_firsts_page.write(image_response.content)
-                photo_firsts_page.close()
-
-            book = {
-                "product_page_url": link,
-                "universal_product_code": data_soup[0].text,
-                "title": soup_scrap.find("h1").text,
-                "price_including_tax": data_soup[3].text,
-                "price_excluding_tax": data_soup[2].text,
-                "number_available": data_soup[6].text,
-                "product_description": soup_scrap.find_all("p")[3].text,
-                "category": soup_scrap.find_all("a")[3].text,
-                "review_rating": data_soup[5].text,
-                "image_source_url": source_clean,
-            }
-            books.append(book)
-        write_to_csv(books)
+                book = {
+                    "product_page_url": link,
+                    "universal_product_code": data_soup[0].text,
+                    "title": soup_scrap.find("h1").text,
+                    "price_including_tax": data_soup[3].text,
+                    "price_excluding_tax": data_soup[2].text,
+                    "number_available": data_soup[6].text,
+                    "product_description": soup_scrap.find_all("p")[3].text,
+                    "category": soup_scrap.find_all("a")[3].text,
+                    "review_rating": data_soup[5].text,
+                    "image_source_url": source_clean,
+                }
+                books.append(book)
+    write_to_csv(books)
 
 
 def write_to_csv(extracted_books: list):
@@ -97,36 +115,45 @@ def browse_and_scrape(url: str, folder: str, page_number: int = 1) -> bool:
     :return:
     """
     try:
-        formatted_url = url.replace(
-            "books.toscrape.com/index.html",
-            f"books.toscrape.com/catalogue/page-{page_number}.html",
-        )
-        html_text = requests.get(formatted_url).text
+
+        html_text = requests.get(url).text
         soup = BeautifulSoup(html_text, "html.parser")
-        logging.info("Now Scraping %s", formatted_url)
+        logging.info("Now Scraping %s", url)
+        formatted_url = url.replace("index.html", f"page-{page_number}.html")
         if soup.find("li", class_="next") is not None:
+            page_number += 1
             scrape_books(soup)
             time.sleep(3)
-            page_number += 1
-            browse_and_scrape(url, folder, page_number)
+            browse_and_scrape(formatted_url, folder, page_number)
         elif soup.find("li", class_="next") is None:
             scrape_books(soup)
             return True
         return True
     except Exception as ex:
         logging.error(ex)
-        return False
+        raise ex
+
+
+def scrape_book_for_category(category):
+    """
+    Scrape book for category
+    :param : category name
+    :return:
+    """
+    name = category["name"]
+    # create_folder(cate["name"])
+    print(category["url"])
+    browse_and_scrape(category["url"], name)
 
 
 if __name__ == "__main__":
     logging.basicConfig(level=logging.INFO)
-    url_to_scrap = input("url to scrape : ")
+    # category_url = input("url to scrape : ")
     books = []
     target_folder = input("folder name to store books info :")
     logging.info("Web scraping starting")
+    categorieses = get_categories_from_side_bar()
     create_folder(target_folder)
-    result = browse_and_scrape(url_to_scrap, target_folder)
-    if result is True:
-        logging.info("Web scraping is now complete!")
-    else:
-        logging.info("Oops, That doesn't seem right!! %s", result)
+    for cate in categorieses:
+        write_to_csv(books)
+        scrape_book_for_category(cate)
